@@ -27,7 +27,7 @@
 
     input.onchange = (e) => {
       const files = Array.from(e.target.files);
-      const convertables = files//.filter((f) => f.type !== "application/pdf");
+      const convertables = files; //.filter((f) => f.type !== "application/pdf");
       for (const file of convertables) {
         const reader = new FileReader();
         reader.addEventListener(
@@ -42,15 +42,19 @@
             const a = document.createElement("a");
             a.appendChild(img);
             a.appendChild(p);
-
-            a.href = reader.result;
-            a.download = file.name + ".pdf";
-            a.onclick = setTimeout(() => URL.revokeObjectURL(a.href), 10);
+            const blob = new Blob([reader.result], {type: 'application/pdf'});
+            const url = URL.createObjectURL(blob);
+            a.href = url;
+            a.target = "_blank";
+            a.name = file.name + ".pdf"
+            a.rel = "noopener noreferrer";
+            // a.download = file.name + ".pdf";
+            // a.onclick = setTimeout(() => URL.revokeObjectURL(a.href), 10);
             output.appendChild(a);
           },
           false,
         );
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
       }
     };
   </script>
