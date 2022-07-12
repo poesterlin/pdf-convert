@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sophies PDF Converter</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="container">
+      <input type="file" id="input" multiple />
+      <div id="fakeInput">
+        <button>Dateien auswählen</button>
+      </div>
+
+      <div id="files"></div>
+    </div>
+  </body>
+
+  <script>
+    const fakeInput = document.getElementById("fakeInput");
+    const input = document.getElementById("input");
+    const output = document.getElementById("files");
+
+    fakeInput.onclick = () => input.click();
+
+    input.onchange = (e) => {
+      const files = Array.from(e.target.files);
+      const convertables = files//.filter((f) => f.type !== "application/pdf");
+      for (const file of convertables) {
+        const reader = new FileReader();
+        reader.addEventListener(
+          "load",
+          function () {
+            const img = document.createElement("img");
+            img.src = "/file.svg";
+
+            const p = document.createElement("p");
+            p.innerText = file.name + ".pdf";
+
+            const a = document.createElement("a");
+            a.appendChild(img);
+            a.appendChild(p);
+
+            a.href = reader.result;
+            a.download = file.name + ".pdf";
+            a.onclick = setTimeout(() => URL.revokeObjectURL(a.href), 10);
+            output.appendChild(a);
+          },
+          false,
+        );
+        reader.readAsDataURL(file);
+      }
+    };
+  </script>
+</html>
